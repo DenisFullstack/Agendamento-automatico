@@ -465,14 +465,34 @@
 
         // --- Lógica PORTAL CLIENTE ---
         window.renderizarHorarios = async function () {
-            let sid = document.getElementById('servicoId').value;
-            let dStr = document.getElementById('dataSelecionada').value;
-            let btn = document.getElementById('btnAgendar');
-            let ctn = document.getElementById('containerHorarios');
+    let sid = document.getElementById('servicoId').value;
+    let dStr = document.getElementById('dataSelecionada').value;
+    let btn = document.getElementById('btnAgendar');
+    let ctn = document.getElementById('containerHorarios');
 
-            btn.disabled = true; btn.classList.add('opacity-50');
+    // ==========================================
+    // NOVA TRAVA: APENAS FINAIS DE SEMANA
+    // ==========================================
+    if (dStr) {
+        // O "T00:00:00" previne bugs de fuso horário onde o JS pega o dia anterior
+        let dataEscolhida = new Date(dStr + "T00:00:00"); 
+        let diaDaSemana = dataEscolhida.getDay(); // 0 = Domingo, 1 = Seg, ..., 6 = Sábado
 
-            if (!sid || !dStr) return;
+        // Se não for Sábado (6) e não for Domingo (0), bloqueia
+        if (diaDaSemana !== 0 && diaDaSemana !== 6) {
+            alert("Os atendimentos são realizados apenas aos finais de semana (Sábados e Domingos). Por favor, escolha outra data! 💅");
+            document.getElementById('dataSelecionada').value = ""; // Limpa a data errada
+            ctn.innerHTML = '<div class="text-center text-xs text-red-400 col-span-3">Selecione um final de semana válido.</div>';
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            return; // Interrompe a função para não buscar vagas no banco
+        }
+    }
+    // ==========================================
+
+    btn.disabled = true; btn.classList.add('opacity-50');
+
+    if (!sid || !dStr) return;
 
             let duracao = getServicoById(sid).duracao;
 
