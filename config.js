@@ -11,6 +11,6 @@
 
 const ADMIN_CREDENTIALS = {
     email: 'gislaine3002@gmail.com',
-    senha: '',
+    senha: 'Cutcut23',
     whatsapp: '5519995746340'
 };
